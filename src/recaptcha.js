@@ -48,12 +48,19 @@ export default class ReCAPTCHA extends React.Component {
     }
   }
 
+  handleError(err) {
+    if (this.props.onError) {
+      this.props.onError(err);
+    }
+  }
+
   explicitRender(cb) {
     if (this.props.grecaptcha && this.props.grecaptcha.render && this.state.widgetId === undefined) {
       const wrapper = document.createElement("div");
       const id = this.props.grecaptcha.render(wrapper, {
         sitekey: this.props.sitekey,
         callback: this.props.onChange,
+		"error-callback" : this.handleError,
         theme: this.props.theme,
         type: this.props.type,
         tabindex: this.props.tabindex,
@@ -98,7 +105,7 @@ export default class ReCAPTCHA extends React.Component {
   render() {
     // consume properties owned by the reCATPCHA, pass the rest to the div so the user can style it.
     /* eslint-disable no-unused-vars */
-    const { sitekey, onChange, theme, type, tabindex, onExpired, size, stoken, grecaptcha, badge, ...childProps } = this.props;
+    const { sitekey, onChange, theme, type, tabindex, onExpired, onError, size, stoken, grecaptcha, badge, ...childProps } = this.props;
     /* eslint-enable no-unused-vars */
     return (
       <div {...childProps} ref={this.handleRecaptchaRef} />
@@ -115,6 +122,7 @@ ReCAPTCHA.propTypes = {
   type: PropTypes.oneOf(["image", "audio"]),
   tabindex: PropTypes.number,
   onExpired: PropTypes.func,
+  onError: PropTypes.func,
   size: PropTypes.oneOf(["compact", "normal", "invisible"]),
   stoken: PropTypes.string,
   badge: PropTypes.oneOf(["bottomright", "bottomleft", "inline"]),
